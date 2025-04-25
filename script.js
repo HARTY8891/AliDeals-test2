@@ -1,26 +1,33 @@
-// Function to parse CSV data
+// Improved CSV parsing function
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
-    const headers = lines[0].split(',');
+    if (lines.length < 2) return []; // Empty if no data
+    
+    const headers = lines[0].split(',').map(h => h.trim());
     const result = [];
     
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Improved CSV parsing that handles commas within quoted fields
+        const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
         
         const obj = {};
-        // Handle quoted values that might contain commas
-        const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-        
         for (let j = 0; j < headers.length; j++) {
-            const header = headers[j].trim();
-            let value = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+            let value = values[j] ? values[j].trim() : '';
             
-            // Convert string 'true'/'false' to boolean
-            if (header === 'isNew') {
+            // Remove surrounding quotes if present
+            if (value.startsWith('"') && value.endsWith('"')) {
+                value = value.slice(1, -1);
+            }
+            
+            // Special handling for boolean field
+            if (headers[j] === 'isNew') {
                 value = value.toLowerCase() === 'true';
             }
             
-            obj[header] = value;
+            obj[headers[j]] = value;
         }
         
         result.push(obj);
@@ -38,13 +45,19 @@ async function loadProducts() {
         }
         
         const csvText = await response.text();
-        return parseCSV(csvText);
+        const products = parseCSV(csvText);
+        
+        console.log('Loaded products:', products); // Debug log
+        return products;
     } catch (error) {
         console.error('Error loading products:', error);
         // Fallback to empty array if there's an error
         return [];
     }
 }
+
+// Rest of your existing functions (createProductCard, renderProducts, etc.) remain the same
+// ...
 
 // Function to create product card HTML
 function createProductCard(product) {
