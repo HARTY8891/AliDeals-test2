@@ -1,3 +1,65 @@
+/* Category Sections */
+.category-section {
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.category-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.products-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 0 1rem 1rem;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+}
+
+.products-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.products-scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.products-scroll-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.products-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.product-card {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    width: 250px; /* Base width for mobile */
+    min-height: 350px;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+@media (min-width: 640px) {
+    .product-card {
+        width: 280px; /* Slightly larger on tablets */
+    }
+}
+
+@media (min-width: 1024px) {
+    .product-card {
+        width: 300px; /* Larger on desktops */
+    }
+}
 /* Base Styles */
 * {
     box-sizing: border-box;
