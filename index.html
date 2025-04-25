@@ -9,8 +9,8 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav>
-        <div class="container nav-container">
+    <nav class="main-nav">
+        <div class="nav-container">
             <div class="logo-container">
                 <a href="#" class="logo">
                     <i class="fas fa-bolt"></i>
@@ -41,7 +41,7 @@
             <div class="container">
                 <div class="search-bar">
                     <input type="text" id="mobileSearchInput" placeholder="Search products...">
-                    <button>
+                    <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -55,7 +55,7 @@
             <div class="mobile-search">
                 <div class="search-bar">
                     <input type="text" id="menuSearchInput" placeholder="Search products...">
-                    <button>
+                    <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -81,7 +81,7 @@
             <div class="desktop-search">
                 <div class="search-bar">
                     <input type="text" id="desktopSearchInput" placeholder="Search for products, categories or brands...">
-                    <button>
+                    <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -93,7 +93,7 @@
     <main class="main-content">
         <div class="container">
             <!-- Latest Deals Section -->
-            <section class="section">
+            <section class="category-section">
                 <div class="section-header">
                     <h2>Latest Deals</h2>
                     <div class="update-info">
@@ -102,29 +102,29 @@
                     </div>
                 </div>
                 
-                <div class="products-grid" id="productsGrid">
-                    <!-- Product cards will be inserted here by JavaScript -->
+                <div class="products-scroll-container" id="productsGrid">
+                    <!-- New products will be inserted here by JavaScript -->
                 </div>
             </section>
             
             <!-- Category Sections -->
-            <section class="section" id="electronics">
+            <section class="category-section" id="electronics">
                 <h2>Electronics</h2>
-                <div class="products-grid" id="electronicsGrid">
+                <div class="products-scroll-container" id="electronicsGrid">
                     <!-- Electronics products will be inserted here by JavaScript -->
                 </div>
             </section>
             
-            <section class="section" id="home">
+            <section class="category-section" id="home">
                 <h2>Home & Garden</h2>
-                <div class="products-grid" id="homeGrid">
+                <div class="products-scroll-container" id="homeGrid">
                     <!-- Home products will be inserted here by JavaScript -->
                 </div>
             </section>
             
-            <section class="section" id="fashion">
+            <section class="category-section" id="fashion">
                 <h2>Fashion</h2>
-                <div class="products-grid" id="fashionGrid">
+                <div class="products-scroll-container" id="fashionGrid">
                     <!-- Fashion products will be inserted here by JavaScript -->
                 </div>
             </section>
@@ -132,16 +132,16 @@
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="main-footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>AliDeals</h3>
                     <p>We find the best deals on AliExpress so you don't have to.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
                 
@@ -159,9 +159,9 @@
                     <p>Subscribe to get the latest deals directly to your inbox.</p>
                     <form class="newsletter-form">
                         <input type="email" id="newsletter-email" name="email" placeholder="Your email" required>
-                            <button type="submit" aria-label="Subscribe">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
+                        <button type="submit" aria-label="Subscribe">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -173,7 +173,7 @@
     </footer>
 
     <!-- Back to Top Button -->
-    <button id="backToTop" class="back-to-top">
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
         <i class="fas fa-arrow-up"></i>
     </button>
 
