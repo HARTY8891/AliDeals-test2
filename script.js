@@ -1,3 +1,51 @@
+// Function to parse CSV data
+function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',');
+    const result = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const obj = {};
+        // Handle quoted values that might contain commas
+        const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        
+        for (let j = 0; j < headers.length; j++) {
+            const header = headers[j].trim();
+            let value = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+            
+            // Convert string 'true'/'false' to boolean
+            if (header === 'isNew') {
+                value = value.toLowerCase() === 'true';
+            }
+            
+            obj[header] = value;
+        }
+        
+        result.push(obj);
+    }
+    
+    return result;
+}
+
+// Function to load products from CSV
+async function loadProducts() {
+    try {
+        const response = await fetch('products.csv');
+        if (!response.ok) {
+            throw new Error('Failed to load products data');
+        }
+        
+        const csvText = await response.text();
+        return parseCSV(csvText);
+    } catch (error) {
+        console.error('Error loading products:', error);
+        // Fallback to empty array if there's an error
+        return [];
+    }
+}
+
 // Function to create product card HTML
 function createProductCard(product) {
     return `
@@ -26,7 +74,8 @@ function createProductCard(product) {
 }
 
 // Function to render products
-function renderProducts() {
+async function renderProducts() {
+    const products = await loadProducts();
     const productsGrid = document.getElementById('productsGrid');
     const electronicsGrid = document.getElementById('electronicsGrid');
     const homeGrid = document.getElementById('homeGrid');
@@ -38,20 +87,25 @@ function renderProducts() {
     homeGrid.innerHTML = '';
     fashionGrid.innerHTML = '';
     
+    if (products.length === 0) {
+        productsGrid.innerHTML = '<p class="col-span-full text-center py-8">No products found. Please check the products.csv file.</p>';
+        return;
+    }
+    
     // Render all products in the main grid
     products.forEach(product => {
-        productsGrid.innerHTML += createProductCard(product);
+        const card = createProductCard(product);
+        productsGrid.innerHTML += card;
         
         // Render to category-specific grids
         if (product.category === 'electronics') {
-            electronicsGrid.innerHTML += createProductCard(product);
+            electronicsGrid.innerHTML += card;
         } else if (product.category === 'home') {
-            homeGrid.innerHTML += createProductCard(product);
+            homeGrid.innerHTML += card;
         } else if (product.category === 'fashion') {
-            fashionGrid.innerHTML += createProductCard(product);
-        } else if (product.category === 'toys') {
-            // You could add a toys grid if needed
+            fashionGrid.innerHTML += card;
         }
+        // Add more categories as needed
     });
     
     // Set up event listeners for filtering
@@ -103,14 +157,11 @@ function setupSearch() {
             input.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const productCards = document.querySelectorAll('.product-card');
-                let hasResults = false;
                 
                 productCards.forEach(card => {
                     const productName = card.getAttribute('data-name');
-                    
                     if (productName.includes(searchTerm)) {
                         card.style.display = 'block';
-                        hasResults = true;
                     } else {
                         card.style.display = 'none';
                     }
@@ -126,44 +177,53 @@ const searchToggle = document.getElementById('searchToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileSearch = document.getElementById('mobileSearch');
 
-menuToggle.addEventListener('click', function() {
-    mobileMenu.classList.toggle('open');
-    mobileMenu.classList.toggle('closed');
-    mobileSearch.classList.add('hidden');
-});
+if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+        mobileMenu.classList.toggle('open');
+        mobileMenu.classList.toggle('closed');
+        mobileSearch.classList.add('hidden');
+    });
+}
 
-searchToggle.addEventListener('click', function() {
-    mobileSearch.classList.toggle('hidden');
-    mobileMenu.classList.remove('open');
-    mobileMenu.classList.add('closed');
-});
+if (searchToggle) {
+    searchToggle.addEventListener('click', function() {
+        mobileSearch.classList.toggle('hidden');
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('closed');
+    });
+}
 
 // Back to top button
 const backToTopButton = document.getElementById('backToTop');
 
-window.addEventListener('scroll', function() {
-    if (window.pageYOffset > 300) {
-        backToTopButton.classList.remove('opacity-0', 'invisible');
-        backToTopButton.classList.add('opacity-100', 'visible');
-    } else {
-        backToTopButton.classList.remove('opacity-100', 'visible');
-        backToTopButton.classList.add('opacity-0', 'invisible');
-    }
-});
+if (backToTopButton) {
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.remove('opacity-0', 'invisible');
+            backToTopButton.classList.add('opacity-100', 'visible');
+        } else {
+            backToTopButton.classList.remove('opacity-100', 'visible');
+            backToTopButton.classList.add('opacity-0', 'invisible');
+        }
+    });
 
-backToTopButton.addEventListener('click', function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// Set current date
-document.getElementById('updateDate').textContent = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-});
+    backToTopButton.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 // Initialize the page
-window.addEventListener('DOMContentLoaded', function() {
-    renderProducts();
+document.addEventListener('DOMContentLoaded', async function() {
+    // Set current date
+    const updateDateElement = document.getElementById('updateDate');
+    if (updateDateElement) {
+        updateDateElement.textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    await renderProducts();
     setupSearch();
 });
