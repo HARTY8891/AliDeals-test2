@@ -82,7 +82,6 @@ function createProductCard(product) {
     `;
 }
 
-// Function to render products
 async function renderProducts() {
     const products = await loadProducts();
     const productsGrid = document.getElementById('productsGrid');
@@ -97,30 +96,28 @@ async function renderProducts() {
     fashionGrid.innerHTML = '';
     
     if (products.length === 0) {
-        productsGrid.innerHTML = '<p class="col-span-full text-center py-8">No products found. Please check the products.csv file.</p>';
+        productsGrid.innerHTML = '<p class="no-products">No products found. Please check the products.csv file.</p>';
         return;
     }
     
-    // Render all products in the main grid
+    // Render only NEW products in the Latest Deals grid
     products.forEach(product => {
-        const card = createProductCard(product);
-        productsGrid.innerHTML += card;
-        
-        // Render to category-specific grids
-        if (product.category === 'electronics') {
-            electronicsGrid.innerHTML += card;
-        } else if (product.category === 'home') {
-            homeGrid.innerHTML += card;
-        } else if (product.category === 'fashion') {
-            fashionGrid.innerHTML += card;
+        if (product.isNew === true || product.isNew === 'true') {
+            productsGrid.innerHTML += createProductCard(product);
         }
-        // Add more categories as needed
+        
+        // Render all products to their category grids
+        if (product.category === 'electronics') {
+            electronicsGrid.innerHTML += createProductCard(product);
+        } else if (product.category === 'home') {
+            homeGrid.innerHTML += createProductCard(product);
+        } else if (product.category === 'fashion') {
+            fashionGrid.innerHTML += createProductCard(product);
+        }
     });
     
-    // Set up event listeners for filtering
     setupCategoryFilters();
 }
-
 // Set up category filter functionality
 function setupCategoryFilters() {
     const categoryLinks = document.querySelectorAll('[data-category]');
