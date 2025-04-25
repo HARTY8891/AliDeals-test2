@@ -55,30 +55,28 @@ async function loadProducts() {
     }
 }
 
-// Function to create product card HTML
+// Modify the createProductCard function to ensure consistent sizing:
 function createProductCard(product) {
     return `
-        <div class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
-            ${product.isNew ? '<div class="deal-badge">NEW</div>' : ''}
-            <div class="p-4">
-                <div class="product-image">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300'">
-                </div>
-                <h3 class="product-name">${product.name}</h3>
-                <div class="product-rating">
-                    <i class="fas fa-star"></i>
-                    <span>${product.rating}</span>
-                    <span class="product-orders">(${product.orders})</span>
-                </div>
-                <div class="product-price-container">
-                    <div class="price-container">
-                        <span class="product-price">$${product.price}</span>
-                        ${product.oldPrice ? `<span class="old-price">$${product.oldPrice}</span>` : ''}
-                    </div>
-                    <a href="${product.link}" target="_blank" class="view-deal">View Deal</a>
-                </div>
-            </div>
+    <div class="product-card">
+        ${product.isNew ? '<div class="deal-badge">NEW</div>' : ''}
+        <div class="product-image">
+            <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300'">
         </div>
+        <div class="product-info">
+            <h3 class="product-name">${product.name}</h3>
+            <div class="product-rating">
+                <i class="fas fa-star"></i>
+                <span>${product.rating}</span>
+                <span class="product-orders">(${product.orders})</span>
+            </div>
+            <div class="product-pricing">
+                <span class="product-price">$${product.price}</span>
+                ${product.oldPrice ? `<span class="old-price">$${product.oldPrice}</span>` : ''}
+            </div>
+            <a href="${product.link}" target="_blank" class="view-deal-btn">View Deal</a>
+        </div>
+    </div>
     `;
 }
 
