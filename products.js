@@ -3,7 +3,7 @@ const products = [
     {
         id: 1,
         name: "Wireless Earbuds Bluetooth 5.0",
-        price: "12.99",
+        price: "199.99",
         oldPrice: "25.99",
         image: "https://via.placeholder.com/300x300?text=Wireless+Earbuds",
         link: "https://www.aliexpress.com/item/example1",
