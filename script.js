@@ -1,64 +1,73 @@
-// Improved CSV parsing function
+// Robust CSV parser that handles quoted fields with commas
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
-    if (lines.length < 2) return []; // Empty if no data
+    if (lines.length < 2) return [];
     
     const headers = lines[0].split(',').map(h => h.trim());
     const result = [];
+    
+    // Regular expression to match CSV fields (including quoted ones with commas)
+    const csvRegex = /(?:,"|^")(""|[\w\W]*?)(?=",|"$)|(?:,(?!")|^(?!"))([^,]*?)(?=$|,)|(\r\n|\n)/g;
     
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
         
-        // Improved CSV parsing that handles commas within quoted fields
-        const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
-        
         const obj = {};
-        for (let j = 0; j < headers.length; j++) {
-            let value = values[j] ? values[j].trim() : '';
+        let matches;
+        let index = 0;
+        
+        // Reset regex and get all matches
+        csvRegex.lastIndex = 0;
+        while ((matches = csvRegex.exec(line)) !== null) {
+            if (index >= headers.length) break;
             
-            // Remove surrounding quotes if present
-            if (value.startsWith('"') && value.endsWith('"')) {
-                value = value.slice(1, -1);
+            // Get the matched value (either from quoted or unquoted match)
+            let value = matches[2] !== undefined ? matches[2] : matches[1];
+            
+            // Clean up the value
+            if (value !== undefined) {
+                value = value.trim();
+                // Replace double quotes with single quotes if they exist
+                value = value.replace(/""/g, '"');
+            } else {
+                value = '';
             }
             
             // Special handling for boolean field
-            if (headers[j] === 'isNew') {
+            if (headers[index] === 'isNew') {
                 value = value.toLowerCase() === 'true';
             }
             
-            obj[headers[j]] = value;
+            obj[headers[index]] = value;
+            index++;
         }
         
         result.push(obj);
     }
     
+    console.log('Parsed products:', result); // Debug output
     return result;
 }
 
 // Function to load products from CSV
 async function loadProducts() {
     try {
-        const response = await fetch('products.csv');
+        // Add cache-buster to prevent caching issues during development
+        const response = await fetch('products.csv?t=' + new Date().getTime());
         if (!response.ok) {
             throw new Error('Failed to load products data');
         }
         
         const csvText = await response.text();
-        const products = parseCSV(csvText);
-        
-        console.log('Loaded products:', products); // Debug log
-        return products;
+        return parseCSV(csvText);
     } catch (error) {
         console.error('Error loading products:', error);
-        // Fallback to empty array if there's an error
-        return [];
+        return []; // Return empty array if error occurs
     }
 }
 
-// Rest of your existing functions (createProductCard, renderProducts, etc.) remain the same
-// ...
-
+// The rest of your existing functions (createProductCard, renderProducts, etc.) remain the same
 // Function to create product card HTML
 function createProductCard(product) {
     return `
