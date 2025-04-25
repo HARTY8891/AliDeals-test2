@@ -506,3 +506,9 @@ footer {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
