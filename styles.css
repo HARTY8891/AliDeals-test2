@@ -1,3 +1,23 @@
+/* Promo Text Section */
+.promo-text {
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.promo-text p {
+    font-size: 1.1rem;
+    color: #e63946;
+    font-weight: 500;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .promo-text p {
+        font-size: 1.2rem;
+    }
+}
 /* Base Styles */
 :root {
     --primary-color: #e63946;
