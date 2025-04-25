@@ -1,40 +1,27 @@
-// Robust CSV parser that handles quoted fields with commas
+// Function to parse CSV data with proper comma handling
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
     if (lines.length < 2) return [];
-    
+
     const headers = lines[0].split(',').map(h => h.trim());
     const result = [];
-    
-    // Regular expression to match CSV fields (including quoted ones with commas)
     const csvRegex = /(?:,"|^")(""|[\w\W]*?)(?=",|"$)|(?:,(?!")|^(?!"))([^,]*?)(?=$|,)|(\r\n|\n)/g;
-    
+
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
-        
+
         const obj = {};
         let matches;
         let index = 0;
         
-        // Reset regex and get all matches
         csvRegex.lastIndex = 0;
         while ((matches = csvRegex.exec(line)) !== null) {
             if (index >= headers.length) break;
             
-            // Get the matched value (either from quoted or unquoted match)
-            let value = matches[2] !== undefined ? matches[2] : matches[1];
+            let value = matches[1] || matches[2] || '';
+            value = value.trim().replace(/""/g, '"');
             
-            // Clean up the value
-            if (value !== undefined) {
-                value = value.trim();
-                // Replace double quotes with single quotes if they exist
-                value = value.replace(/""/g, '"');
-            } else {
-                value = '';
-            }
-            
-            // Special handling for boolean field
             if (headers[index] === 'isNew') {
                 value = value.toLowerCase() === 'true';
             }
@@ -42,53 +29,53 @@ function parseCSV(csvText) {
             obj[headers[index]] = value;
             index++;
         }
-        
-        result.push(obj);
+
+        if (Object.keys(obj).length === headers.length) {
+            result.push(obj);
+        }
     }
-    
-    console.log('Parsed products:', result); // Debug output
+
     return result;
 }
 
 // Function to load products from CSV
 async function loadProducts() {
     try {
-        // Add cache-buster to prevent caching issues during development
-        const response = await fetch('products.csv?t=' + new Date().getTime());
-        if (!response.ok) {
-            throw new Error('Failed to load products data');
-        }
+        const response = await fetch('products.csv');
+        if (!response.ok) throw new Error('Failed to load products data');
         
         const csvText = await response.text();
-        return parseCSV(csvText);
+        const products = parseCSV(csvText);
+        
+        console.log('Parsed products:', products); // Debug output
+        return products;
     } catch (error) {
         console.error('Error loading products:', error);
-        return []; // Return empty array if error occurs
+        return [];
     }
 }
 
-// The rest of your existing functions (createProductCard, renderProducts, etc.) remain the same
 // Function to create product card HTML
 function createProductCard(product) {
     return `
-        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 relative" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
+        <div class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
             ${product.isNew ? '<div class="deal-badge">NEW</div>' : ''}
             <div class="p-4">
-                <div class="w-full h-48 bg-gray-200 rounded-lg mb-4 overflow-hidden">
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x300'">
+                <div class="product-image">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300'">
                 </div>
-                <h3 class="font-medium mb-2">${product.name}</h3>
-                <div class="flex items-center mb-2">
-                    <i class="fas fa-star text-yellow-400 mr-1"></i>
-                    <span class="text-sm mr-1">${product.rating}</span>
-                    <span class="text-sm text-gray-500">(${product.orders})</span>
+                <h3 class="product-name">${product.name}</h3>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <span>${product.rating}</span>
+                    <span class="product-orders">(${product.orders})</span>
                 </div>
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="text-lg font-bold text-red-500">$${product.price}</span>
-                        ${product.oldPrice ? `<span class="text-sm text-gray-500 line-through block">$${product.oldPrice}</span>` : ''}
+                <div class="product-price-container">
+                    <div class="price-container">
+                        <span class="product-price">$${product.price}</span>
+                        ${product.oldPrice ? `<span class="old-price">$${product.oldPrice}</span>` : ''}
                     </div>
-                    <a href="${product.link}" target="_blank" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition">View Deal</a>
+                    <a href="${product.link}" target="_blank" class="view-deal">View Deal</a>
                 </div>
             </div>
         </div>
