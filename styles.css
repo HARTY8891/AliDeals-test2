@@ -61,7 +61,14 @@ body {
     background: white;
     color: var(--primary-color);
 }
+.lang-btn[data-lang="he"] {
+    background-color: #4285f4; /* Blue color */
+    color: white;
+}
 
+.lang-btn[data-lang="he"].active {
+    background-color: #3367d6; /* Darker blue when active */
+}
 /* Navigation */
 .main-nav {
     background-color: white;
