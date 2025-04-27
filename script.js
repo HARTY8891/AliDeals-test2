@@ -1,4 +1,63 @@
-// Improved CSV parsing function
+// ====================
+// LANGUAGE MANAGEMENT
+// ====================
+let currentLanguage = 'he'; // Set Hebrew as default
+
+function toggleRTL(isRTL) {
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    const rtlStylesheet = document.getElementById('rtl-stylesheet');
+    if (rtlStylesheet) {
+        rtlStylesheet.disabled = !isRTL;
+    }
+}
+
+function translateStaticElements(lang) {
+    // Update all elements with data translation attributes
+    document.querySelectorAll('[data-en], [data-he]').forEach(el => {
+        if (el.dataset[lang]) {
+            if (el.tagName === 'INPUT' && el.placeholder) {
+                el.placeholder = el.dataset[lang];
+            } else {
+                el.textContent = el.dataset[lang];
+            }
+        }
+    });
+
+    // Update HTML lang attribute
+    document.documentElement.lang = lang;
+    
+    // Update active language button
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+}
+
+function switchLanguage(lang) {
+    currentLanguage = lang;
+    localStorage.setItem('preferredLanguage', lang); // Save preference
+    toggleRTL(lang === 'he');
+    translateStaticElements(lang);
+    renderProducts(); // Re-render products with correct language
+}
+
+// Initialize language switcher buttons
+function initLanguageSwitcher() {
+    // Load preferred language from storage or use default
+    const savedLang = localStorage.getItem('preferredLanguage') || 'he';
+    switchLanguage(savedLang);
+
+    // Set up button click handlers
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            switchLanguage(this.dataset.lang);
+        });
+    });
+}
+
+// ====================
+// CSV PARSING & PRODUCTS
+// ====================
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
     if (lines.length < 2) return [];
@@ -23,10 +82,7 @@ function parseCSV(csvText) {
             if (index >= headers.length) break;
             
             let value = matches[1] || matches[2] || '';
-            value = value.trim();
-            
-            // Remove escaped quotes if present
-            value = value.replace(/""/g, '"');
+            value = value.trim().replace(/""/g, '"');
             
             // Special handling for boolean field
             if (headers[index] === 'isNew') {
@@ -45,7 +101,6 @@ function parseCSV(csvText) {
     return result;
 }
 
-// Function to load products from CSV
 async function loadProducts() {
     try {
         const response = await fetch('products.csv');
@@ -53,7 +108,7 @@ async function loadProducts() {
         const csvText = await response.text();
         const products = parseCSV(csvText);
         
-        console.log('Parsed products:', products); // Debug output
+        console.log('Loaded products:', products);
         return products;
     } catch (error) {
         console.error('Error loading products:', error);
@@ -61,16 +116,21 @@ async function loadProducts() {
     }
 }
 
-// Function to create product card HTML
+// ====================
+// PRODUCT RENDERING
+// ====================
 function createProductCard(product) {
+    const name = currentLanguage === 'he' && product.name_he ? product.name_he : product.name;
+    const category = currentLanguage === 'he' && product.category_he ? product.category_he : product.category;
+    
     return `
-    <div class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
-        ${product.isNew ? '<div class="deal-badge">NEW</div>' : ''}
+    <div class="product-card" data-category="${product.category}" data-name="${name.toLowerCase()}">
+        ${product.isNew ? '<div class="deal-badge">' + (currentLanguage === 'he' ? 'חדש' : 'NEW') + '</div>' : ''}
         <div class="product-image">
-            <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300'">
+            <img src="${product.image}" alt="${name}" onerror="this.src='https://via.placeholder.com/300x300'">
         </div>
         <div class="product-info">
-            <h3 class="product-name">${product.name}</h3>
+            <h3 class="product-name">${name}</h3>
             <div class="product-rating">
                 <i class="fas fa-star"></i>
                 <span>${product.rating}</span>
@@ -80,82 +140,17 @@ function createProductCard(product) {
                 <span class="product-price">$${product.price}</span>
                 ${product.oldPrice ? `<span class="old-price">$${product.oldPrice}</span>` : ''}
             </div>
-            <a href="${product.link}" target="_blank" class="view-deal-btn">View Deal</a>
+            <a href="${product.link}" target="_blank" class="view-deal-btn">
+                ${currentLanguage === 'he' ? 'צפה במבצע' : 'View Deal'}
+            </a>
         </div>
     </div>
     `;
 }
 
-// Function to get unique categories from products
-function getUniqueCategories(products) {
-    const categories = new Set();
-    products.forEach(product => {
-        if (product.category) {
-            categories.add(product.category);
-        }
-    });
-    return Array.from(categories);
-}
-
-// Function to format category names
-function formatCategoryName(category) {
-    return category
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .replace(/\bAnd\b/, '&');
-}
-
-// Function to create category navigation links
-function createCategoryLinks(categories) {
-    // Desktop dropdown
-    const dropdown = document.getElementById('categoryDropdown');
-    if (dropdown) {
-        dropdown.innerHTML = categories.map(category => `
-            <a href="#" data-category="${category}">${formatCategoryName(category)}</a>
-        `).join('');
-    }
-    
-    // Mobile menu
-    const mobileLinks = document.getElementById('mobileCategoryLinks');
-    if (mobileLinks) {
-        mobileLinks.innerHTML = categories.map(category => `
-            <a href="#" class="mobile-nav-link" data-category="${category}">${formatCategoryName(category)}</a>
-        `).join('');
-    }
-}
-
-// Function to setup dropdown functionality
-function setupDropdown() {
-    const dropdown = document.querySelector('.dropdown');
-    const dropbtn = document.querySelector('.dropbtn');
-    
-    if (dropdown && dropbtn) {
-        // Toggle dropdown on button click
-        dropbtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            dropdown.classList.toggle('active');
-        });
-        
-        // Close when clicking outside
-        document.addEventListener('click', function() {
-            dropdown.classList.remove('active');
-        });
-        
-        // Prevent dropdown from closing when clicking inside it
-        dropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-}
-
-// Function to render products and categories
-async function renderProductsAndCategories() {
+async function renderProducts() {
     const products = await loadProducts();
-    const categories = getUniqueCategories(products);
-    
-    // Create category navigation
-    createCategoryLinks(categories);
+    const categories = [...new Set(products.map(p => p.category))];
     
     // Clear existing content (except Latest Deals)
     const mainContent = document.querySelector('.main-content .container');
@@ -169,8 +164,12 @@ async function renderProductsAndCategories() {
         section.className = 'category-section';
         section.id = category.toLowerCase();
         
+        const categoryName = currentLanguage === 'he' 
+            ? products.find(p => p.category === category)?.category_he || category
+            : category;
+        
         section.innerHTML = `
-            <h2>${formatCategoryName(category)}</h2>
+            <h2>${formatCategoryName(categoryName)}</h2>
             <div class="products-scroll-container" id="${category}Grid"></div>
         `;
         
@@ -179,19 +178,15 @@ async function renderProductsAndCategories() {
     
     // Render products
     const productsGrid = document.getElementById('productsGrid');
-    productsGrid.innerHTML = '';
+    productsGrid.innerHTML = products.length === 0 
+        ? '<p class="no-products">' + (currentLanguage === 'he' ? 'לא נמצאו מוצרים' : 'No products found') + '</p>'
+        : '';
     
-    if (products.length === 0) {
-        productsGrid.innerHTML = '<p class="no-products">No products found.</p>';
-        return;
-    }
-    
-    // Render products to their sections
     products.forEach(product => {
         const card = createProductCard(product);
         
         // Add to Latest Deals if new
-        if (product.isNew === true || product.isNew === 'true') {
+        if (product.isNew) {
             productsGrid.innerHTML += card;
         }
         
@@ -205,7 +200,16 @@ async function renderProductsAndCategories() {
     setupCategoryFilters();
 }
 
-// Category filter functionality
+function formatCategoryName(category) {
+    return category
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .replace(/\bAnd\b/, '&');
+}
+
+// ====================
+// UI FUNCTIONALITY
+// ====================
 function setupCategoryFilters() {
     document.querySelectorAll('[data-category]').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -227,17 +231,29 @@ function setupCategoryFilters() {
                 }
             }
             
-            // Close mobile menu if open
             mobileMenu.classList.remove('open');
             mobileMenu.classList.add('closed');
-            
-            // Close dropdown if open
             document.querySelector('.dropdown')?.classList.remove('active');
         });
     });
 }
 
-// Search functionality
+function setupDropdown() {
+    const dropdown = document.querySelector('.dropdown');
+    const dropbtn = document.querySelector('.dropbtn');
+    
+    if (dropdown && dropbtn) {
+        dropbtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', () => dropdown.classList.remove('active'));
+        dropdown.addEventListener('click', e => e.stopPropagation());
+    }
+}
+
 function setupSearch() {
     const searchInputs = [
         document.getElementById('desktopSearchInput'),
@@ -249,9 +265,7 @@ function setupSearch() {
         if (input) {
             input.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-                const productCards = document.querySelectorAll('.product-card');
-                
-                productCards.forEach(card => {
+                document.querySelectorAll('.product-card').forEach(card => {
                     const productName = card.getAttribute('data-name');
                     card.style.display = productName.includes(searchTerm) ? 'block' : 'none';
                 });
@@ -260,7 +274,9 @@ function setupSearch() {
     });
 }
 
-// Mobile menu toggle
+// ====================
+// INITIALIZATION
+// ====================
 const menuToggle = document.getElementById('menuToggle');
 const searchToggle = document.getElementById('searchToggle');
 const mobileMenu = document.getElementById('mobileMenu');
@@ -282,24 +298,14 @@ if (searchToggle) {
     });
 }
 
-// Back to top button
 const backToTopButton = document.getElementById('backToTop');
-
 if (backToTopButton) {
     window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            backToTopButton.classList.add('visible');
-        } else {
-            backToTopButton.classList.remove('visible');
-        }
+        backToTopButton.classList.toggle('visible', window.pageYOffset > 300);
     });
-
-    backToTopButton.addEventListener('click', function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    backToTopButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// Set current date
 document.getElementById('updateDate').textContent = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -308,7 +314,8 @@ document.getElementById('updateDate').textContent = new Date().toLocaleDateStrin
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    renderProductsAndCategories();
+    initLanguageSwitcher();
+    setupDropdown();
     setupSearch();
-    setupDropdown(); // Initialize dropdown functionality
+    renderProducts();
 });
