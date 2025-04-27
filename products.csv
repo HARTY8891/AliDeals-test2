@@ -1,5 +1,5 @@
 id,name,name_he,price,oldPrice,image,link,category,category_he,rating,orders,isNew
-1,Wireless Earbuds Bluetooth 5.0,אוזניות מדהימות,12.99,25.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example1,electronics,,4.7,5.2k,TRUE
+1,Wireless Earbuds Bluetooth 5.0,אוזניות מדהימות,12.99,25.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example1,electronics,אלקטרוניקה, 4.7,5.2k,TRUE
 2,Smart Watch Fitness Tracker,,24.99,49.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example2,electronics,,4.5,3.8k,FALSE
 3,LED Strip Lights 5M RGB,,8.99,15.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example3,home,,4.8,7.1k,TRUE
 4,Cotton T-Shirt Men's Fashion,,6.99,12.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example4,fashion,,4.6,2.5k,FALSE
