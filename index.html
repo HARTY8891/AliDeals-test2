@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <!-- Add language toggle button in header -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-en="AliExpress Deals - Best Offers & Discounts" data-he="עסקאות AliExpress - מבצעים והנחות">AliExpress Deals</title>
-    <!-- Add RTL CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles-rtl.css" id="rtl-stylesheet" disabled>
 </head>
 <body>
-    <!-- Language switcher -->
-   <div class="language-switcher">
-    <button class="lang-btn active" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="he">עברית</button>
-</div>
-    <!-- Make all text elements data-translatable -->
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="he">עברית</button>
+    </div>
+
+    <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
             <div class="logo-container">
@@ -23,33 +24,36 @@
                     <span data-en="AliDeals" data-he="עסקאותAli">AliDeals</span>
                 </a>
             </div>
-        
-        <div class="nav-links">
-            <a href="#" class="nav-link" data-category="all">All Deals</a>
-            <div class="dropdown">
-                <button class="dropbtn">Categories <i class="fas fa-caret-down"></i></button>
-                <div class="dropdown-content" id="categoryDropdown">
-                    <!-- Categories will be added here by JavaScript -->
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link" data-category="all" data-en="All Deals" data-he="כל המבצעים">All Deals</a>
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        <span data-en="Categories" data-he="קטגוריות">Categories</span>
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content" id="categoryDropdown">
+                        <!-- Categories will be added by JavaScript -->
+                    </div>
                 </div>
             </div>
+            
+            <div class="nav-buttons">
+                <button id="searchToggle" class="mobile-search-toggle">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button id="menuToggle" class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
-        
-        <div class="nav-buttons">
-            <button id="searchToggle" class="mobile-search-toggle">
-                <i class="fas fa-search"></i>
-            </button>
-            <button id="menuToggle" class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </div>
-    
         
         <!-- Mobile Search -->
         <div id="mobileSearch" class="mobile-search-container hidden">
             <div class="container">
                 <div class="search-bar">
-                    <input type="text" id="mobileSearchInput" placeholder="Search products...">
+                    <input type="text" id="mobileSearchInput" placeholder="Search products..." 
+                           data-en="Search products..." data-he="חיפוש מוצרים...">
                     <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
@@ -63,7 +67,8 @@
         <div class="container">
             <div class="mobile-search">
                 <div class="search-bar">
-                    <input type="text" id="menuSearchInput" placeholder="Search products...">
+                    <input type="text" id="menuSearchInput" placeholder="Search products..." 
+                           data-en="Search products..." data-he="חיפוש מוצרים...">
                     <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
@@ -71,8 +76,7 @@
             </div>
             
             <nav class="mobile-nav">
-                <a href="#" class="mobile-nav-link" data-category="all">All Deals</a>
-                <!-- Mobile categories will be inserted here -->
+                <a href="#" class="mobile-nav-link" data-category="all" data-en="All Deals" data-he="כל המבצעים">All Deals</a>
                 <div id="mobileCategoryLinks"></div>
             </nav>
         </div>
@@ -81,13 +85,18 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-container">
-            <h1>Latest AliExpress Deals & Discounts</h1>
-            <p>Discover the best products at the lowest prices with free shipping to your country</p>
+            <h1 data-en="Latest AliExpress Deals & Discounts" data-he="המבצעים וההנחות האחרונים ב-AliExpress">Latest AliExpress Deals & Discounts</h1>
+            <p data-en="Discover the best products at the lowest prices with free shipping to your country" 
+               data-he="גלה את המוצרים הטובים ביותר במחירים הנמוכים ביותר עם משלוח חינם לארצך">
+               Discover the best products at the lowest prices with free shipping to your country
+            </p>
             
             <!-- Desktop Search -->
             <div class="desktop-search">
                 <div class="search-bar">
-                    <input type="text" id="desktopSearchInput" placeholder="Search for products, categories or brands...">
+                    <input type="text" id="desktopSearchInput" 
+                           data-en="Search for products, categories or brands..." 
+                           data-he="חפש מוצרים, קטגוריות או מותגים...">
                     <button aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
@@ -99,7 +108,10 @@
     <!-- Promo Text -->
     <div class="promo-text">
         <div class="container">
-            <p>Ali Deals is the best place to find the greatest price and deals</p>
+            <p data-en="Ali Deals is the best place to find the greatest price and deals" 
+               data-he="Ali Deals הוא המקום הטוב ביותר למציאת המחירים והעסקאות הטובים ביותר">
+               Ali Deals is the best place to find the greatest price and deals
+            </p>
         </div>
     </div>
 
@@ -109,14 +121,14 @@
             <!-- Latest Deals Section -->
             <section class="category-section">
                 <div class="section-header">
-                    <h2>Latest Deals</h2>
+                    <h2 data-en="Latest Deals" data-he="מבצעים אחרונים">Latest Deals</h2>
                     <div class="update-info">
-                        <span>Updated:</span>
+                        <span data-en="Updated:" data-he="עודכן:">Updated:</span>
                         <span id="updateDate"></span>
                     </div>
                 </div>
                 <div class="products-scroll-container" id="productsGrid">
-                    <!-- New products will be inserted here -->
+                    <!-- New products will be inserted here by JavaScript -->
                 </div>
             </section>
             
@@ -129,8 +141,11 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h3>AliDeals</h3>
-                    <p>We find the best deals on AliExpress so you don't have to.</p>
+                    <h3 data-en="AliDeals" data-he="עסקאותAli">AliDeals</h3>
+                    <p data-en="We find the best deals on AliExpress so you don't have to" 
+                       data-he="אנו מוצאים את העסקאות הטובות ביותר ב-AliExpress כך שלא תצטרכו">
+                       We find the best deals on AliExpress so you don't have to
+                    </p>
                     <div class="social-links">
                         <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
@@ -139,14 +154,17 @@
                 </div>
                 
                 <div class="footer-col">
-                    <h3>Contact Us</h3>
-                    <p>Have questions or suggestions?</p>
+                    <h3 data-en="Contact Us" data-he="צור קשר">Contact Us</h3>
+                    <p data-en="Have questions or suggestions?" data-he="יש לך שאלות או הצעות?">Have questions or suggestions?</p>
                     <a href="mailto:contact@alideals.com" class="footer-email">contact@alideals.com</a>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>© 2023 AliDeals. All rights reserved. This is not an official AliExpress website.</p>
+                <p data-en="© 2023 AliDeals. All rights reserved. This is not an official AliExpress website." 
+                   data-he="© 2023 AliDeals. כל הזכויות שמורות. זהו לא אתר רשמי של AliExpress">
+                   © 2023 AliDeals. All rights reserved. This is not an official AliExpress website.
+                </p>
             </div>
         </div>
     </footer>
