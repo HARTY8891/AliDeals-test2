@@ -1,27 +1,45 @@
-// Function to parse CSV data
+// Improved CSV parsing function
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
+    if (lines.length < 2) return [];
+    
     const headers = lines[0].split(',').map(h => h.trim());
     const result = [];
     
+    // Regex to handle quoted fields with commas
+    const csvRegex = /(?:,"|^")(""|[\w\W]*?)(?=",|"$)|(?:,(?!")|^(?!"))([^,]*?)(?=$|,)/g;
+    
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
+        const line = lines[i].trim();
+        if (!line) continue;
         
         const obj = {};
-        const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        let matches;
+        let index = 0;
         
-        for (let j = 0; j < headers.length; j++) {
-            const header = headers[j];
-            let value = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+        // Reset regex and get matches
+        csvRegex.lastIndex = 0;
+        while ((matches = csvRegex.exec(line)) !== null) {
+            if (index >= headers.length) break;
             
-            if (header === 'isNew') {
+            let value = matches[1] || matches[2] || '';
+            value = value.trim();
+            
+            // Remove escaped quotes if present
+            value = value.replace(/""/g, '"');
+            
+            // Special handling for boolean field
+            if (headers[index] === 'isNew') {
                 value = value.toLowerCase() === 'true';
             }
             
-            obj[header] = value;
+            obj[headers[index]] = value;
+            index++;
         }
         
-        result.push(obj);
+        if (Object.keys(obj).length > 0) {
+            result.push(obj);
+        }
     }
     
     return result;
@@ -33,7 +51,10 @@ async function loadProducts() {
         const response = await fetch('products.csv');
         if (!response.ok) throw new Error('Failed to load products data');
         const csvText = await response.text();
-        return parseCSV(csvText);
+        const products = parseCSV(csvText);
+        
+        console.log('Parsed products:', products); // Debug output
+        return products;
     } catch (error) {
         console.error('Error loading products:', error);
         return [];
