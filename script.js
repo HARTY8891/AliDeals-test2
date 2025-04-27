@@ -88,15 +88,44 @@ function formatCategoryName(category) {
 function createCategoryLinks(categories) {
     // Desktop dropdown
     const dropdown = document.getElementById('categoryDropdown');
-    dropdown.innerHTML = categories.map(category => `
-        <a href="#" data-category="${category}">${formatCategoryName(category)}</a>
-    `).join('');
+    if (dropdown) {
+        dropdown.innerHTML = categories.map(category => `
+            <a href="#" data-category="${category}">${formatCategoryName(category)}</a>
+        `).join('');
+    }
     
     // Mobile menu
     const mobileLinks = document.getElementById('mobileCategoryLinks');
-    mobileLinks.innerHTML = categories.map(category => `
-        <a href="#" class="mobile-nav-link" data-category="${category}">${formatCategoryName(category)}</a>
-    `).join('');
+    if (mobileLinks) {
+        mobileLinks.innerHTML = categories.map(category => `
+            <a href="#" class="mobile-nav-link" data-category="${category}">${formatCategoryName(category)}</a>
+        `).join('');
+    }
+}
+
+// Function to setup dropdown functionality
+function setupDropdown() {
+    const dropdown = document.querySelector('.dropdown');
+    const dropbtn = document.querySelector('.dropbtn');
+    
+    if (dropdown && dropbtn) {
+        // Toggle dropdown on button click
+        dropbtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('active');
+        });
+        
+        // Prevent dropdown from closing when clicking inside it
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
 }
 
 // Function to render products and categories
@@ -180,6 +209,9 @@ function setupCategoryFilters() {
             // Close mobile menu if open
             mobileMenu.classList.remove('open');
             mobileMenu.classList.add('closed');
+            
+            // Close dropdown if open
+            document.querySelector('.dropdown')?.classList.remove('active');
         });
     });
 }
@@ -257,4 +289,5 @@ document.getElementById('updateDate').textContent = new Date().toLocaleDateStrin
 document.addEventListener('DOMContentLoaded', function() {
     renderProductsAndCategories();
     setupSearch();
+    setupDropdown(); // Initialize dropdown functionality
 });
