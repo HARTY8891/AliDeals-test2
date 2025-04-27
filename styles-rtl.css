@@ -1,20 +1,22 @@
-/* RTL overrides */
+/* RTL Layout Overrides */
 [dir="rtl"] {
     direction: rtl;
     text-align: right;
 }
 
-[dir="rtl"] .logo {
+[dir="rtl"] .language-switcher {
+    right: auto;
+    left: 15px;
+}
+
+[dir="rtl"] .logo i {
     margin-right: 0;
     margin-left: 8px;
 }
 
-[dir="rtl"] .products-scroll-container {
-    direction: ltr; /* Keep product cards LTR */
-}
-
-[dir="rtl"] .product-info {
-    text-align: right;
+[dir="rtl"] .nav-links {
+    margin-right: 0;
+    margin-left: auto;
 }
 
 [dir="rtl"] .search-bar button {
@@ -23,9 +25,47 @@
 }
 
 [dir="rtl"] .dropdown-content {
+    text-align: right;
     left: auto;
     right: 0;
+    transform: translateX(0) translateY(-10px);
+}
+
+[dir="rtl"] .dropdown.active .dropdown-content {
+    transform: translateX(0) translateY(0);
+}
+
+[dir="rtl"] .product-rating {
+    direction: ltr;
+}
+
+[dir="rtl"] .old-price {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+[dir="rtl"] .back-to-top {
+    right: auto;
+    left: 24px;
+}
+
+[dir="rtl"] .footer-col {
     text-align: right;
 }
 
-/* Add more RTL-specific overrides as needed */
+[dir="rtl"] .social-links {
+    justify-content: flex-end;
+}
+
+[dir="rtl"] .mobile-nav {
+    align-items: flex-end;
+}
+
+[dir="rtl"] .section-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .update-info span:first-child {
+    margin-right: 0;
+    margin-left: 8px;
+}
