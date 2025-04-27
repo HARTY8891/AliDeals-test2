@@ -1,22 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
+    <!-- Add language toggle button in header -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AliExpress Deals - Best Offers & Discounts</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <title data-en="AliExpress Deals - Best Offers & Discounts" data-he="עסקאות AliExpress - מבצעים והנחות">AliExpress Deals</title>
+    <!-- Add RTL CSS -->
+    <link rel="stylesheet" href="styles-rtl.css" id="rtl-stylesheet" disabled>
 </head>
 <body>
-    <!-- Navigation -->
-<nav class="main-nav">
-    <div class="nav-container">
-        <div class="logo-container">
-            <a href="#" class="logo">
-                <i class="fas fa-bolt"></i>
-                AliDeals
-            </a>
-        </div>
+    <!-- Language switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="he">עברית</button>
+    </div>
+
+    <!-- Make all text elements data-translatable -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span data-en="AliDeals" data-he="עסקאותAli">AliDeals</span>
+                </a>
+            </div>
         
         <div class="nav-links">
             <a href="#" class="nav-link" data-category="all">All Deals</a>
