@@ -1,40 +1,29 @@
-// Function to parse CSV data with proper comma handling
+// Function to parse CSV data
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
-    if (lines.length < 2) return [];
-
     const headers = lines[0].split(',').map(h => h.trim());
     const result = [];
-    const csvRegex = /(?:,"|^")(""|[\w\W]*?)(?=",|"$)|(?:,(?!")|^(?!"))([^,]*?)(?=$|,)|(\r\n|\n)/g;
-
+    
     for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-
-        const obj = {};
-        let matches;
-        let index = 0;
+        if (!lines[i].trim()) continue;
         
-        csvRegex.lastIndex = 0;
-        while ((matches = csvRegex.exec(line)) !== null) {
-            if (index >= headers.length) break;
+        const obj = {};
+        const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        
+        for (let j = 0; j < headers.length; j++) {
+            const header = headers[j];
+            let value = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
             
-            let value = matches[1] || matches[2] || '';
-            value = value.trim().replace(/""/g, '"');
-            
-            if (headers[index] === 'isNew') {
+            if (header === 'isNew') {
                 value = value.toLowerCase() === 'true';
             }
             
-            obj[headers[index]] = value;
-            index++;
+            obj[header] = value;
         }
-
-        if (Object.keys(obj).length === headers.length) {
-            result.push(obj);
-        }
+        
+        result.push(obj);
     }
-
+    
     return result;
 }
 
@@ -43,22 +32,18 @@ async function loadProducts() {
     try {
         const response = await fetch('products.csv');
         if (!response.ok) throw new Error('Failed to load products data');
-        
         const csvText = await response.text();
-        const products = parseCSV(csvText);
-        
-        console.log('Parsed products:', products); // Debug output
-        return products;
+        return parseCSV(csvText);
     } catch (error) {
         console.error('Error loading products:', error);
         return [];
     }
 }
 
-// Modify the createProductCard function to ensure consistent sizing:
+// Function to create product card HTML
 function createProductCard(product) {
     return `
-    <div class="product-card">
+    <div class="product-card" data-category="${product.category}" data-name="${product.name.toLowerCase()}">
         ${product.isNew ? '<div class="deal-badge">NEW</div>' : ''}
         <div class="product-image">
             <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300'">
@@ -80,52 +65,103 @@ function createProductCard(product) {
     `;
 }
 
-async function renderProducts() {
-    const products = await loadProducts();
-    const productsGrid = document.getElementById('productsGrid');
-    const electronicsGrid = document.getElementById('electronicsGrid');
-    const homeGrid = document.getElementById('homeGrid');
-    const fashionGrid = document.getElementById('fashionGrid');
+// Function to get unique categories from products
+function getUniqueCategories(products) {
+    const categories = new Set();
+    products.forEach(product => {
+        if (product.category) {
+            categories.add(product.category);
+        }
+    });
+    return Array.from(categories);
+}
+
+// Function to format category names
+function formatCategoryName(category) {
+    return category
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .replace(/\bAnd\b/, '&');
+}
+
+// Function to create category navigation links
+function createCategoryLinks(categories) {
+    // Desktop dropdown
+    const dropdown = document.getElementById('categoryDropdown');
+    dropdown.innerHTML = categories.map(category => `
+        <a href="#" data-category="${category}">${formatCategoryName(category)}</a>
+    `).join('');
     
-    // Clear existing content
+    // Mobile menu
+    const mobileLinks = document.getElementById('mobileCategoryLinks');
+    mobileLinks.innerHTML = categories.map(category => `
+        <a href="#" class="mobile-nav-link" data-category="${category}">${formatCategoryName(category)}</a>
+    `).join('');
+}
+
+// Function to render products and categories
+async function renderProductsAndCategories() {
+    const products = await loadProducts();
+    const categories = getUniqueCategories(products);
+    
+    // Create category navigation
+    createCategoryLinks(categories);
+    
+    // Clear existing content (except Latest Deals)
+    const mainContent = document.querySelector('.main-content .container');
+    const latestDealsSection = document.querySelector('.category-section');
+    mainContent.innerHTML = '';
+    mainContent.appendChild(latestDealsSection);
+    
+    // Create category sections
+    categories.forEach(category => {
+        const section = document.createElement('section');
+        section.className = 'category-section';
+        section.id = category.toLowerCase();
+        
+        section.innerHTML = `
+            <h2>${formatCategoryName(category)}</h2>
+            <div class="products-scroll-container" id="${category}Grid"></div>
+        `;
+        
+        mainContent.appendChild(section);
+    });
+    
+    // Render products
+    const productsGrid = document.getElementById('productsGrid');
     productsGrid.innerHTML = '';
-    electronicsGrid.innerHTML = '';
-    homeGrid.innerHTML = '';
-    fashionGrid.innerHTML = '';
     
     if (products.length === 0) {
-        productsGrid.innerHTML = '<p class="no-products">No products found. Please check the products.csv file.</p>';
+        productsGrid.innerHTML = '<p class="no-products">No products found.</p>';
         return;
     }
     
-    // Render only NEW products in the Latest Deals grid
+    // Render products to their sections
     products.forEach(product => {
+        const card = createProductCard(product);
+        
+        // Add to Latest Deals if new
         if (product.isNew === true || product.isNew === 'true') {
-            productsGrid.innerHTML += createProductCard(product);
+            productsGrid.innerHTML += card;
         }
         
-        // Render all products to their category grids
-        if (product.category === 'electronics') {
-            electronicsGrid.innerHTML += createProductCard(product);
-        } else if (product.category === 'home') {
-            homeGrid.innerHTML += createProductCard(product);
-        } else if (product.category === 'fashion') {
-            fashionGrid.innerHTML += createProductCard(product);
+        // Add to category section
+        const categoryGrid = document.getElementById(`${product.category}Grid`);
+        if (categoryGrid) {
+            categoryGrid.innerHTML += card;
         }
     });
     
     setupCategoryFilters();
 }
-// Set up category filter functionality
+
+// Category filter functionality
 function setupCategoryFilters() {
-    const categoryLinks = document.querySelectorAll('[data-category]');
-    
-    categoryLinks.forEach(link => {
+    document.querySelectorAll('[data-category]').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const category = this.getAttribute('data-category');
             
-            // Scroll to the appropriate section
             if (category === 'all') {
                 window.scrollTo({
                     top: document.querySelector('main').offsetTop - 20,
@@ -164,11 +200,7 @@ function setupSearch() {
                 
                 productCards.forEach(card => {
                     const productName = card.getAttribute('data-name');
-                    if (productName.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    card.style.display = productName.includes(searchTerm) ? 'block' : 'none';
                 });
             });
         }
@@ -203,11 +235,9 @@ const backToTopButton = document.getElementById('backToTop');
 if (backToTopButton) {
     window.addEventListener('scroll', function() {
         if (window.pageYOffset > 300) {
-            backToTopButton.classList.remove('opacity-0', 'invisible');
-            backToTopButton.classList.add('opacity-100', 'visible');
+            backToTopButton.classList.add('visible');
         } else {
-            backToTopButton.classList.remove('opacity-100', 'visible');
-            backToTopButton.classList.add('opacity-0', 'invisible');
+            backToTopButton.classList.remove('visible');
         }
     });
 
@@ -216,18 +246,15 @@ if (backToTopButton) {
     });
 }
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', async function() {
-    // Set current date
-    const updateDateElement = document.getElementById('updateDate');
-    if (updateDateElement) {
-        updateDateElement.textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
+// Set current date
+document.getElementById('updateDate').textContent = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+});
 
-    await renderProducts();
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    renderProductsAndCategories();
     setupSearch();
 });
