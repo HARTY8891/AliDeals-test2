@@ -1,0 +1,31 @@
+/* RTL overrides */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .logo {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+[dir="rtl"] .products-scroll-container {
+    direction: ltr; /* Keep product cards LTR */
+}
+
+[dir="rtl"] .product-info {
+    text-align: right;
+}
+
+[dir="rtl"] .search-bar button {
+    right: auto;
+    left: 16px;
+}
+
+[dir="rtl"] .dropdown-content {
+    left: auto;
+    right: 0;
+    text-align: right;
+}
+
+/* Add more RTL-specific overrides as needed */
