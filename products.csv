@@ -1,10 +1,10 @@
-id,name,name_he,price,oldPrice,image,link,category,rating,orders,isNew
-1,Wireless Earbuds Bluetooth 5.0,אוזניות מדהימות,12.99,25.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example1,electronics,4.7,5.2k,TRUE
-2,Smart Watch Fitness Tracker,,24.99,49.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example2,electronics,4.5,3.8k,FALSE
-3,LED Strip Lights 5M RGB,,8.99,15.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example3,home,4.8,7.1k,TRUE
-4,Cotton T-Shirt Men's Fashion,,6.99,12.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example4,fashion,4.6,2.5k,FALSE
-5,Kitchen Knife Set 6PCS,,18.99,29.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example5,home,4.7,4.3k,FALSE
-6,Wireless Charger 15W Fast,,9.99,19.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example6,electronics,4.4,6.7k,TRUE
-7,Women's Summer Dress,,14.99,24.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example7,fashion,4.5,3.2k,FALSE
-8,RC Car Toy for Kids,,22.99,39.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example8,toys,4.6,1.9k,FALSE
-9,Women's Summer Dress,שמלה,15,33,https://placehold.co/500x300,https://www.aliexpress.com/item/example8,garden,4,2,TRUE
+id,name,name_he,price,oldPrice,image,link,category,category_he,rating,orders,isNew
+1,Wireless Earbuds Bluetooth 5.0,אוזניות מדהימות,12.99,25.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example1,electronics,,4.7,5.2k,TRUE
+2,Smart Watch Fitness Tracker,,24.99,49.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example2,electronics,,4.5,3.8k,FALSE
+3,LED Strip Lights 5M RGB,,8.99,15.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example3,home,,4.8,7.1k,TRUE
+4,Cotton T-Shirt Men's Fashion,,6.99,12.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example4,fashion,,4.6,2.5k,FALSE
+5,Kitchen Knife Set 6PCS,,18.99,29.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example5,home,,4.7,4.3k,FALSE
+6,Wireless Charger 15W Fast,,9.99,19.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example6,electronics,,4.4,6.7k,TRUE
+7,Women's Summer Dress,,14.99,24.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example7,fashion,,4.5,3.2k,FALSE
+8,RC Car Toy for Kids,,22.99,39.99,https://placehold.co/500x300,https://www.aliexpress.com/item/example8,toys,,4.6,1.9k,FALSE
+9,Women's Summer Dress,שמלה,15,33,https://placehold.co/500x300,https://www.aliexpress.com/item/example8,garden,,4,2,TRUE
