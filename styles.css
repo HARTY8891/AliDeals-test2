@@ -69,6 +69,14 @@ body {
 .lang-btn[data-lang="he"].active {
     background-color: #3367d6; /* Darker blue when active */
 }
+.lang-btn[data-lang="en"] {
+    background-color: var(--primary-color); /* Red color */
+    color: white;
+}
+
+.lang-btn[data-lang="en"].active {
+    background-color: var(--primary-hover); /* Darker red when active */
+}
 /* Navigation */
 .main-nav {
     background-color: white;
