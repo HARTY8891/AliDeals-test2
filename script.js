@@ -117,6 +117,46 @@ async function loadProducts() {
 }
 
 // ====================
+// CATEGORY DROPDOWN
+// ====================
+function populateCategoryDropdown(products) {
+    const categories = [...new Set(products.map(p => p.category))];
+    const dropdown = document.getElementById('categoryDropdown');
+    const mobileDropdown = document.getElementById('mobileCategoryLinks');
+    
+    if (!dropdown || !mobileDropdown) return;
+    
+    // Clear existing items
+    dropdown.innerHTML = '';
+    mobileDropdown.innerHTML = '';
+    
+    // Add "All Deals" option
+    const allDealsText = currentLanguage === 'he' ? 'כל המבצעים' : 'All Deals';
+    dropdown.innerHTML += `<a href="#" data-category="all">${allDealsText}</a>`;
+    mobileDropdown.innerHTML += `<a href="#" class="mobile-nav-link" data-category="all">${allDealsText}</a>`;
+    
+    // Add category items
+    categories.forEach(category => {
+        const categoryName = currentLanguage === 'he' 
+            ? products.find(p => p.category === category)?.category_he || category
+            : category;
+            
+        const formattedName = formatCategoryName(categoryName);
+        
+        dropdown.innerHTML += `
+            <a href="#" data-category="${category.toLowerCase()}">${formattedName}</a>
+        `;
+        
+        mobileDropdown.innerHTML += `
+            <a href="#" class="mobile-nav-link" data-category="${category.toLowerCase()}">${formattedName}</a>
+        `;
+    });
+    
+    // Re-setup event listeners
+    setupCategoryFilters();
+}
+
+// ====================
 // PRODUCT RENDERING
 // ====================
 function createProductCard(product) {
@@ -150,6 +190,7 @@ function createProductCard(product) {
 
 async function renderProducts() {
     const products = await loadProducts();
+    populateCategoryDropdown(products);
     const categories = [...new Set(products.map(p => p.category))];
     
     // Clear existing content (except Latest Deals)
